@@ -1,4 +1,5 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
+import Pet from './Pet';
 
 const ANIMALS = ["bird","rabbit","cat","dog"];
 
@@ -8,6 +9,22 @@ const SearchParams = () => {
     const [animal, setAnimal] = useState("");
     const [breed, setBreed] = useState("");
     const breeds = ["poodle","bichon"];
+    const [pets, setPets] = useState([]);
+
+
+    useEffect(() => {
+        requestPets();
+    }, []); 
+
+    async function requestPets() {
+        const res = await fetch(`http://pets-v2.dev-apis.com/pets?animal=${animal}&;location=${location}&;breed=${breed}`);
+        const json = await res.json();
+
+        setPets(json.pets);
+    }
+
+
+
     return(
         <div>
             <form>
@@ -70,6 +87,11 @@ const SearchParams = () => {
                 <button>Submit</button>
                 <div><h3>{location}</h3></div>
             </form>
+
+            {pets.map( (pet) => (
+                    <Pet name={pet.name} animal={pet.animal} breed={pet.breed} key={pet.id} />
+                    
+            ))}
         </div>
     );   
 }
